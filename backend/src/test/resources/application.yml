@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:chimaera;MODE=MySQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  flyway:
+    enabled: false
+chimaera:
+  ai-service-url: http://localhost:65535
+  cors:
+    allowed-origin-patterns: http://localhost:5173
+  auth:
+    enabled: false

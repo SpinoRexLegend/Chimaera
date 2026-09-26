@@ -1,0 +1,89 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.chimaera:chimaera-api >----------------------
+[INFO] Building chimaera-api 0.1.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.5.16:run (default-cli) > test-compile @ chimaera-api >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ chimaera-api ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 11 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ chimaera-api ---
+[INFO] Not compiling main sources
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ chimaera-api ---
+[INFO] Not copying test resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ chimaera-api ---
+[INFO] Not compiling test sources
+[INFO] 
+[INFO] <<< spring-boot:3.5.16:run (default-cli) < test-compile @ chimaera-api <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.5.16:run (default-cli) @ chimaera-api ---
+[INFO] Attaching agents: []
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+2026-09-26T17:48:04.620+05:30  INFO 5600 --- [           main] com.chimaera.ChimaeraApplication         : Starting ChimaeraApplication using Java 17.0.20.1 with PID 5600 (C:\Users\spino\Documents\Codex\2026-09-25\caveman-plugin-caveman-openai-curated-remote\outputs\chimaera\backend\target\classes started by spino in C:\Users\spino\Documents\Codex\2026-09-25\caveman-plugin-caveman-openai-curated-remote\outputs\chimaera\backend)
+2026-09-26T17:48:04.650+05:30  INFO 5600 --- [           main] com.chimaera.ChimaeraApplication         : No active profile set, falling back to 1 default profile: "default"
+2026-09-26T17:48:07.058+05:30  INFO 5600 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-26T17:48:07.257+05:30  INFO 5600 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 155 ms. Found 10 JPA repository interfaces.
+2026-09-26T17:48:08.646+05:30  INFO 5600 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-09-26T17:48:08.673+05:30  INFO 5600 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-26T17:48:08.673+05:30  INFO 5600 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.55]
+2026-09-26T17:48:08.839+05:30  INFO 5600 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-09-26T17:48:08.840+05:30  INFO 5600 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 4093 ms
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2026-09-26T17:48:09.673+05:30  INFO 5600 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-26T17:48:10.103+05:30  INFO 5600 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1fc1c7e
+2026-09-26T17:48:10.108+05:30  INFO 5600 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-26T17:48:10.216+05:30  INFO 5600 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:mysql://127.0.0.1:3307/chimaera?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC (MySQL 8.0)
+2026-09-26T17:48:10.444+05:30  INFO 5600 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 10 migrations (execution time 00:00.092s)
+2026-09-26T17:48:10.477+05:30  INFO 5600 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema `chimaera`: 10
+2026-09-26T17:48:10.483+05:30  INFO 5600 --- [           main] o.f.core.internal.command.DbMigrate      : Schema `chimaera` is up to date. No migration necessary.
+2026-09-26T17:48:10.643+05:30  INFO 5600 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-09-26T17:48:10.787+05:30  INFO 5600 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.53.Final
+2026-09-26T17:48:10.893+05:30  INFO 5600 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-09-26T17:48:11.565+05:30  INFO 5600 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-26T17:48:11.800+05:30  INFO 5600 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.42
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-26T17:48:14.394+05:30  INFO 5600 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-26T17:48:14.514+05:30  INFO 5600 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-26T17:48:15.042+05:30  INFO 5600 --- [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-26T17:48:17.214+05:30  INFO 5600 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+2026-09-26T17:48:18.013+05:30  INFO 5600 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-09-26T17:48:18.044+05:30  INFO 5600 --- [           main] com.chimaera.ChimaeraApplication         : Started ChimaeraApplication in 14.628 seconds (process running for 15.497)
+2026-09-26T17:48:19.108+05:30  INFO 5600 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-26T17:48:19.108+05:30  INFO 5600 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-26T17:48:19.116+05:30  INFO 5600 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 8 ms
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  15:29 min
+[INFO] Finished at: 2026-09-26T18:03:26+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.5.16:run (default-cli) on project chimaera-api: Process terminated with exit code: -1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

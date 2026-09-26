@@ -1,0 +1,13 @@
+node_modules/
+dist/
+target/
+__pycache__/
+.pytest_cache/
+.venv/
+.m2/
+.env
+.env.local
+.env.*.local
+*.iml
+.idea/
+.vscode/
