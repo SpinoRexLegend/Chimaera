@@ -223,16 +223,15 @@ class AuthProfileService {
         var user = users.findById(userId).orElseThrow(() ->
                 new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Profile not found"));
         user.applyResumeOrganization(organization);
-        List<UserSkill> linked = new ArrayList<>(userSkills.findByUser(user));
-        Set<String> existing = new LinkedHashSet<>();
-        linked.forEach(link -> existing.add(Skill.normalize(link.skill().name())));
-        if (suggestedSkills != null) {
-            suggestedSkills.stream().map(String::trim).filter(value -> !value.isBlank())
-                    .map(Skill::normalize).distinct().limit(Math.max(0, 30 - linked.size())).forEach(value -> {
-                        if (existing.add(value)) skills.findByNormalizedName(value)
-                                .ifPresent(skill -> linked.add(new UserSkill(user, skill)));
-                    });
-        }
+        List<UserSkill> linked = new ArrayList<>();
+        if (suggestedSkills == null || suggestedSkills.isEmpty()) return;
+        userSkills.deleteByUser(user);
+        userSkills.flush();
+        suggestedSkills.stream().map(String::trim).filter(value -> !value.isBlank())
+                .map(Skill::normalize).distinct().limit(30).forEach(value -> {
+                    Skill skill = skills.findByNormalizedName(value).orElseGet(() -> skills.save(new Skill(value)));
+                    linked.add(new UserSkill(user, skill));
+                });
         userSkills.saveAll(linked);
     }
 

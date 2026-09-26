@@ -66,14 +66,32 @@ class ProfileResumeTest {
         assertThrows(ResponseStatusException.class, () -> ResumeController.validate("not pdf".getBytes()));
         assertThrows(ResponseStatusException.class, () -> ResumeController.validate(new byte[ResumeController.MAX_BYTES + 1]));
     }
-    @Test void resumeParsingSuggestsCatalogSkillsAndOrganization() throws Exception {
+    @Test void resumeParsingUsesEachResumeInsteadOfStaleCatalogValues() throws Exception {
         profiles.sync("resume-catalog", "catalog@example.test", details("Catalog", "Rust"));
         var profile = profiles.sync("resume-parse", "parse@example.test", details("Parser", "Java"));
         var user = mock(UserProfile.class);
         when(user.id()).thenReturn(profile.id());
         when(quests.currentUser()).thenReturn(user);
 
-        byte[] pdf;
+        var parsed = resumes.upload(new MockMultipartFile("file", "resume.pdf", "application/pdf",
+                resumePdf("Company: Example Labs", "Skills: Kotlin, Figma")));
+        assertEquals("Example Labs", parsed.suggestedOrganization());
+        assertEquals(Set.of("kotlin", "figma"), parsed.suggestedSkills().stream().map(String::toLowerCase).collect(java.util.stream.Collectors.toSet()));
+        var first = profiles.get("resume-parse");
+        assertEquals("Example Labs", first.institution());
+        assertEquals(Set.of("kotlin", "figma"), new HashSet<>(first.skills()));
+
+        var replacement = resumes.upload(new MockMultipartFile("file", "replacement.pdf", "application/pdf",
+                resumePdf("Employer: Nova Works", "Technical Skills: Go; Blender")));
+        assertEquals("Nova Works", replacement.suggestedOrganization());
+        assertEquals(Set.of("go", "blender"), replacement.suggestedSkills().stream().map(String::toLowerCase).collect(java.util.stream.Collectors.toSet()));
+        var updated = profiles.get("resume-parse");
+        assertEquals("Nova Works", updated.institution());
+        assertEquals(Set.of("go", "blender"), new HashSet<>(updated.skills()));
+        assertTrue(resumes.info().available());
+    }
+
+    private byte[] resumePdf(String... lines) throws Exception {
         try (var document = new PDDocument(); var output = new ByteArrayOutputStream()) {
             var page = new PDPage();
             document.addPage(page);
@@ -81,22 +99,14 @@ class ProfileResumeTest {
                 content.beginText();
                 content.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
                 content.newLineAtOffset(50, 700);
-                content.showText("Company: Example Labs");
-                content.newLineAtOffset(0, -20);
-                content.showText("Skills: Rust");
+                for (String line : lines) {
+                    content.showText(line);
+                    content.newLineAtOffset(0, -20);
+                }
                 content.endText();
             }
             document.save(output);
-            pdf = output.toByteArray();
+            return output.toByteArray();
         }
-
-        var parsed = resumes.upload(new MockMultipartFile("file", "resume.pdf", "application/pdf", pdf));
-        assertEquals("Example Labs", parsed.suggestedOrganization());
-        assertTrue(parsed.suggestedSkills().stream().anyMatch("rust"::equalsIgnoreCase));
-        var updated = profiles.get("resume-parse");
-        assertEquals("Example Labs", updated.institution());
-        assertTrue(updated.skills().stream().anyMatch("java"::equalsIgnoreCase));
-        assertTrue(updated.skills().stream().anyMatch("rust"::equalsIgnoreCase));
-        assertTrue(resumes.info().available());
     }
 }

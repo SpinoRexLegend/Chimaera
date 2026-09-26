@@ -9,7 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import org.apache.pdfbox.Loader;
@@ -36,11 +38,10 @@ class ResumeController {
     private final QuestService quests;
     private final ProposalRepository proposals;
     private final SkillRepository skills;
-    private final AiClient ai;
     private final AuthProfileService profiles;
     ResumeController(ResumeRepository resumes, QuestService quests, ProposalRepository proposals,
-                     SkillRepository skills, AiClient ai, AuthProfileService profiles) {
-        this.resumes = resumes; this.quests = quests; this.proposals = proposals; this.skills = skills; this.ai = ai;
+                     SkillRepository skills, AuthProfileService profiles) {
+        this.resumes = resumes; this.quests = quests; this.proposals = proposals; this.skills = skills;
         this.profiles = profiles;
     }
 
@@ -73,7 +74,8 @@ class ResumeController {
         validate(content);
         var resume = resumes.save(new UserResume(owner, content));
         var parsed = parse(resume);
-        profiles.applyResumeSuggestions(owner, parsed.suggestedOrganization(), parsed.suggestedSkills());
+        if (parsed.suggestedOrganization() != null || !parsed.suggestedSkills().isEmpty())
+            profiles.applyResumeSuggestions(owner, parsed.suggestedOrganization(), parsed.suggestedSkills());
         return parsed;
     }
     @DeleteMapping("/profile/resume") @ResponseStatus(HttpStatus.NO_CONTENT) @Transactional
@@ -104,13 +106,7 @@ class ResumeController {
             if (text.isBlank()) return new ResumeInfo(true, resume.updatedAt, List.of(), null,
                     "Resume saved, but no selectable text was found. Scanned PDFs require OCR.");
             var catalog = skills.findAll().stream().filter(Skill::active).map(Skill::name).toList();
-            List<String> suggested;
-            try {
-                var allowed = catalog.stream().collect(java.util.stream.Collectors.toMap(Skill::normalize, value -> value, (a, b) -> a));
-                suggested = ai.analyse(text.substring(0, Math.min(text.length(), 8000)), List.of(), catalog).capabilities().stream()
-                        .map(Skill::normalize).distinct().map(allowed::get).filter(java.util.Objects::nonNull).toList();
-            }
-            catch (RuntimeException unavailable) { suggested = catalog.stream().filter(skill -> containsPhrase(text, skill)).toList(); }
+            List<String> suggested = resumeSkills(text, catalog);
             String organization = organization(text);
             return new ResumeInfo(true, resume.updatedAt, suggested, organization,
                     suggested.isEmpty() && organization == null
@@ -124,9 +120,53 @@ class ResumeController {
     private static boolean containsPhrase(String text, String phrase) {
         return Pattern.compile("(?i)(?<![\\p{L}\\p{N}])" + Pattern.quote(phrase) + "(?![\\p{L}\\p{N}])").matcher(text).find();
     }
+    private static final Pattern SKILLS_INLINE = Pattern.compile(
+            "(?i)^(?:technical\\s+|professional\\s+|core\\s+)?(?:skills|competencies|technologies|tech stack|tools(?:\\s*&\\s*technologies)?)\\s*[:\\-]\\s*(.+)$");
+    private static final Pattern SKILLS_HEADER = Pattern.compile(
+            "(?i)^(?:technical\\s+|professional\\s+|core\\s+)?(?:skills|competencies|technologies|tech stack|tools(?:\\s*&\\s*technologies)?)\\s*:?[\\s]*$");
+    private static final Pattern NEXT_SECTION = Pattern.compile(
+            "(?i)^(?:summary|profile|objective|experience|work experience|employment(?: history)?|education|projects?|certifications?|achievements?|awards?|interests?|languages?|references?)\\s*:?[\\s]*$");
+
+    static List<String> resumeSkills(String text, List<String> catalog) {
+        LinkedHashSet<String> result = new LinkedHashSet<>();
+        if (catalog != null) catalog.stream().filter(skill -> skill != null && !skill.isBlank() && containsPhrase(text, skill))
+                .forEach(result::add);
+        boolean inSkills = false;
+        int capturedLines = 0;
+        for (String raw : text.split("\\R")) {
+            String line = raw.replace('\u00a0', ' ').trim();
+            var inline = SKILLS_INLINE.matcher(line);
+            if (inline.matches()) {
+                addSkillTokens(result, inline.group(1));
+                inSkills = true;
+                capturedLines = 0;
+                continue;
+            }
+            if (SKILLS_HEADER.matcher(line).matches()) {
+                inSkills = true;
+                capturedLines = 0;
+                continue;
+            }
+            if (!inSkills || line.isBlank()) continue;
+            if (NEXT_SECTION.matcher(line).matches() || capturedLines++ >= 8) break;
+            addSkillTokens(result, line);
+        }
+        return result.stream().limit(30).toList();
+    }
+    private static void addSkillTokens(LinkedHashSet<String> result, String value) {
+        for (String raw : value.split("\\s*(?:[,;|•·▪●◆]|\\s+/\\s+)\\s*|\\s{2,}")) {
+            String token = raw.replaceFirst("^[\\-–—:]+\\s*", "").replaceFirst("\\s*[.]+$", "").trim();
+            if (token.length() < 2 || token.length() > 80 || token.split("\\s+").length > 6) continue;
+            String lower = token.toLowerCase(Locale.ROOT);
+            if (NEXT_SECTION.matcher(token).matches() || lower.contains("@") || lower.startsWith("http")
+                    || lower.matches(".*\\b(?:19|20)\\d{2}\\b.*")) continue;
+            result.add(token);
+        }
+    }
     private static String organization(String text) {
         var match = Pattern.compile("(?im)^(?:organization|company|employer)\\s*[:\\-]\\s*(.{2,180})$").matcher(text);
-        if (!match.find()) return null;
+        if (!match.find()) match = Pattern.compile("(?im)^.{2,100}\\s+(?:at|@)\\s+([\\p{L}\\p{N}&.' -]{2,120})(?:\\s*[|•]|$)").matcher(text);
+        if (!match.find(0)) return null;
         String value = match.group(1).trim();
         return value.length() > 180 ? value.substring(0, 180) : value;
     }

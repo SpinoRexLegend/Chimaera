@@ -96,6 +96,10 @@ managed load balancer or ingress and set `APP_ALLOWED_ORIGINS` to the exact
 public site origin. This remains a production-like prototype, not a substitute
 for managed backups, centralized logging, malware scanning, or security review.
 
+For a beginner-friendly managed deployment of all four services, follow
+[`DEPLOYMENT.md`](DEPLOYMENT.md). It contains the exact Railway service layout,
+variables, health checks, Supabase redirect configuration, and rollback steps.
+
 ## Database model
 
 The MySQL schema now covers identity links prepared for Supabase, profiles,

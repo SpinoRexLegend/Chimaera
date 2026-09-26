@@ -67,7 +67,7 @@ function Hero({ onBegin, signedIn, onSignOut, theme, onToggleTheme }) {
 
 const phases = [
   ["01", "AI agent", "Natural-language project goals are converted into focused, editable skill requirements."],
-  ["02", "Resume parsing", "Text-based resumes update organization and merge verified catalogued skills into member profiles."],
+  ["02", "Resume parsing", "Text-based resumes extract organization and real Skills-section values directly into editable member profiles."],
   ["03", "ML matching", "Eligible collaborators are ranked from saved skills, experience, availability, and live profile data."],
   ["04", "Human approval", "The agent drafts the best invitation, but nothing is sent until the requester authorizes it."],
   ["05", "Request control", "Recipients can review, accept, decline, or remove invitations while senders track every response."],

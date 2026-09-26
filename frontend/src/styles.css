@@ -641,3 +641,34 @@ html[data-theme="light"] .agent-geometry {
 }
 
 footer strong { color: var(--bright); font-weight: 600; }
+
+/* One transition owns the section boundary; the previous double fade caused a visible light-mode seam. */
+.protocol { margin-top: -1px; }
+.protocol::before { content: none; }
+.hero::before { bottom: -1px; height: 150px; background: linear-gradient(transparent, #080809 96%); }
+html[data-theme="light"] .hero::before { background: linear-gradient(transparent, #fffdf7 96%); }
+
+/* Fade section-two geometry in independently so no rectangular background edge is visible. */
+.protocol { background: #080809; }
+.protocol::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  height: auto;
+  pointer-events: none;
+  background:
+    linear-gradient(116deg, transparent 0 6%, rgba(112,0,20,.2) 6% 7.2%, transparent 7.2% 34%, rgba(209,21,47,.18) 34% 35.7%, transparent 35.7% 69%, rgba(112,0,20,.2) 69% 70.1%, transparent 70.1%),
+    linear-gradient(73deg, transparent 0 58%, rgba(209,21,47,.1) 58% 59.2%, transparent 59.2%),
+    radial-gradient(circle at 85% 8%, rgba(112,0,20,.22), transparent 27%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 240px, #000);
+  mask-image: linear-gradient(to bottom, transparent, #000 240px, #000);
+}
+.protocol .section-id { z-index: 2; }
+html[data-theme="light"] .protocol { background: #fffdf7; }
+html[data-theme="light"] .protocol::before {
+  background:
+    linear-gradient(116deg, transparent 0 6%, rgba(124,91,8,.12) 6% 7.2%, transparent 7.2% 34%, rgba(182,138,24,.14) 34% 35.7%, transparent 35.7% 69%, rgba(124,91,8,.11) 69% 70.1%, transparent 70.1%),
+    linear-gradient(73deg, transparent 0 58%, rgba(182,138,24,.09) 58% 59.2%, transparent 59.2%),
+    radial-gradient(circle at 85% 8%, rgba(182,138,24,.14), transparent 27%);
+}

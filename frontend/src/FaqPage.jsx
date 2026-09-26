@@ -3,7 +3,7 @@ const groups = [
     ["How do I start?", "Describe the project and optionally provide the skills you need. CHIMAERA extracts requirements, searches saved member profiles, and presents the strongest eligible collaborator for your approval."],
     ["How are collaborators selected?", "The model computes TF-IDF similarity from requested skills and skills saved in member profiles. This is an explainable recommendation, not a prediction of performance."],
     ["What if nobody matches?", "Refine overly narrow skill requirements or try again after more members update their profiles. CHIMAERA does not invent a candidate."],
-    ["Can a resume update my profile?", "Yes. Uploading a text-based PDF updates a detected organization and merges detected catalogued skills into your profile. Existing skills are preserved and the updated fields remain editable. Scanned image-only PDFs require OCR and will not be auto-filled."],
+    ["Can a resume update my profile?", "Yes. Uploading a text-based PDF reads its Skills section and detected organization, then replaces stale resume-derived profile values with the new document’s values. The fields remain editable. Scanned image-only PDFs require OCR and will not be auto-filled."],
     ["Can I describe skills in ordinary language?", "Yes. The extractor compares your description with the employee skill catalog and combines that result with any skills you enter explicitly. Clear, specific wording produces better recommendations."],
   ]},
   { title: "Accounts and profiles", items: [
@@ -18,7 +18,7 @@ const groups = [
     ["What if several people have the same skills?", "The model ranks relevance using the live pool. Equal scores use a stable identifier order, so the result is repeatable, but human review remains required before sending."],
     ["Can the agent contact someone automatically?", "No. It can prepare a proposal, but the request owner must explicitly authorize transmission."],
     ["What if a candidate becomes private or unavailable after being selected?", "Eligibility is checked again before protected candidate data is returned. The owner should rerun matching rather than relying on a stale selection."],
-    ["Does the model read resumes when ranking?", "Resume text updates organization and catalogued profile skills during upload. Matching then uses the saved profile skills; the uploaded document itself is not sent to the ranking model."],
+    ["Does the model read resumes when ranking?", "Resume text updates organization and profile skills during upload. Matching then uses those saved profile skills; the uploaded document itself is not sent to the ranking model."],
   ]},
   { title: "Resumes, privacy, and safety", items: [
     ["Who can view my resume?", "You can download your own resume. Request owners can download resumes of currently eligible matches. When you authorize an invitation, its recipient can also download your resume while reviewing it. There is no public resume URL."],

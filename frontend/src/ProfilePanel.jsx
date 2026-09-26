@@ -87,7 +87,7 @@ export default function ProfilePanel({ session }) {
         <div className="wide profile-save"><span>Changes take effect after saving.</span><button disabled={busy} type="submit">{busy ? "Working…" : "Save changes"}</button></div>
       </form>
       <section className="resume-section"><h4>Your resume</h4>
-        <div className="resume-document" aria-hidden="true">PDF</div><p>Upload a text-based resume to update your organization and skills.</p><p className="resume-help">PDF · up to 5 MB. Detected skills are merged with your existing skills and remain editable. Scanned documents require OCR.</p>
+        <div className="resume-document" aria-hidden="true">PDF</div><p>Upload a text-based resume to update your organization and skills.</p><p className="resume-help">PDF · up to 5 MB. A detected Skills section replaces stale profile skills and remains editable. Scanned documents require OCR.</p>
         <label>{resume?.available ? "Replace resume" : "Upload resume"}<input type="file" accept=".pdf,application/pdf" disabled={busy} onChange={upload} /></label>
         {resume?.available && <div><p>Uploaded {new Date(resume.updatedAt).toLocaleString()}</p><ResumeButton session={session} path="/profile/resume" label="Download my resume" /> <button type="button" disabled={busy} onClick={remove}>Remove resume</button></div>}
       </section></div>
