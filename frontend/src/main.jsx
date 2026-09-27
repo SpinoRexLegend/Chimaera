@@ -53,8 +53,8 @@ function Hero({ onBegin, signedIn, onSignOut, theme, onToggleTheme }) {
         <p className="overline"><span /> Assembly intelligence online</p>
         <h1>Different minds.<br /><em>One creation.</em></h1>
         <p className="hero-lede">
-          Describe your project. CHIMAERA maps the skills it needs, recommends the strongest
-          collaborator, and sends an invitation only after your approval.
+          Describe your project. CHIMAERA maps the skills it needs, ranks the strongest
+          collaborators, and sends an invitation to the person you choose only after your approval.
         </p>
         <button className="hero-action" type="button" onClick={onBegin}>
           Plan a project <Arrow />
@@ -122,7 +122,7 @@ function AgentWorkspace({ session, onSignOut, theme, onToggleTheme }) {
   const [sentState, setSentState] = useState("idle");
   const [chat, setChat] = useState(null);
   const [messages, setMessages] = useState([
-    { role: "agent", text: "Describe your project and deliverables. I will identify the required skills, search member profiles, and recommend the strongest collaborator for your approval." },
+    { role: "agent", text: "Describe your project and deliverables. I will identify the required skills, rank the strongest collaborators, and let you choose whom to invite." },
   ]);
   useEffect(() => {
     if (activeView !== "inbox" && activeView !== "sent") return undefined;
@@ -186,16 +186,30 @@ function AgentWorkspace({ session, onSignOut, theme, onToggleTheme }) {
       if (!matches.length) {
         setMessages(current => [...current.filter(message => !message.pending), { role: "agent", text: "No eligible collaborator currently matches the requested skills. Refine the skills or try again after more members update their profiles." }]);
       } else {
-        const selected = matches[0];
-        const draft = await request(`/quests/${quest.id}/proposals/draft`, { method: "POST", body: JSON.stringify({ candidateId: selected.id, candidateName: selected.name }) });
-        setProposal(draft);
+        const topMatches = matches.slice(0, 3);
         setMessages(current => [...current.filter(message => !message.pending), {
-          role: "agent", text: `I recommend ${selected.name}. Review the profile evidence below, then authorize the invitation if the match looks right.`,
-          matches, approval: true, questId: quest.id,
+          role: "agent", text: `I found ${topMatches.length} strong ${topMatches.length === 1 ? "match" : "matches"}. Review the evidence and choose the person you want to invite.`,
+          matches: topMatches, approval: true, questId: quest.id,
         }]);
       }
     } catch (error) {
       setMessages((current) => [...current.filter((message) => !message.pending), { role: "agent", text: `Unable to complete the route: ${error.message}`, error: true }]);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function selectCandidate(questId, candidate) {
+    if (busy || proposal?.status === "SENT") return;
+    setBusy(true);
+    try {
+      const draft = await request(`/quests/${questId}/proposals/draft`, {
+        method: "POST",
+        body: JSON.stringify({ candidateId: candidate.id, candidateName: candidate.name }),
+      });
+      setProposal({ ...draft, candidateName: candidate.name });
+    } catch (error) {
+      setMessages((current) => [...current, { role: "agent", text: error.message, error: true }]);
     } finally {
       setBusy(false);
     }
@@ -259,15 +273,18 @@ function AgentWorkspace({ session, onSignOut, theme, onToggleTheme }) {
               {message.capabilities?.length > 0 && <div className="capabilities">{message.capabilities.map((item) => <b key={item}>{item}</b>)}</div>}
               {message.matches?.length > 0 && (
                 <div className="match-strip">
-                  {message.matches.slice(0, 3).map((match) => (
-                    <article key={match.id}>
+                  {message.matches.map((match) => (
+                    <article key={match.id} className={proposal?.questId === message.questId && proposal?.candidateId === match.id ? "selected" : ""}>
                       <i>{match.name.slice(0, 1)}</i><div><strong>{match.name}</strong><small>Skill similarity</small><small>{match.reasons?.[0]}</small><ResumeButton session={session} path={`/quests/${message.questId}/candidates/${match.id}/resume`} /></div><b>{Math.round(match.matchScore * 100)}%</b>
+                      <button className="candidate-choice" type="button" aria-pressed={proposal?.questId === message.questId && proposal?.candidateId === match.id} onClick={() => selectCandidate(message.questId, match)} disabled={busy || proposal?.status === "SENT"}>
+                        {proposal?.questId === message.questId && proposal?.candidateId === match.id ? "Selected" : `Choose ${match.name}`}
+                      </button>
                     </article>
                   ))}
                 </div>
               )}
-              {message.approval && proposal?.status !== "SENT" && (
-                <div><p>Sending shares your profile and uploaded resume with the recipient.</p><button className="approve" type="button" onClick={approveProposal} disabled={busy}>Authorize proposal <Arrow /></button></div>
+              {message.approval && proposal?.questId === message.questId && proposal?.status !== "SENT" && (
+                <div><p>Sending shares your profile and uploaded resume with {proposal.candidateName}.</p><button className="approve" type="button" onClick={approveProposal} disabled={busy}>Authorize invitation to {proposal.candidateName} <Arrow /></button></div>
               )}
             </motion.div>
           ))}

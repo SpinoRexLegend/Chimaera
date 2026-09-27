@@ -49,4 +49,26 @@ class LiveRequestTest {
             assertEquals(1, proposals.findByReceiver_IdOrderByCreatedAtDesc(receiver.id()).size());
         } finally { SecurityContextHolder.clearContext(); }
     }
+
+    @Test void ownerCanChooseAnyTopThreeCandidateButNotTheFourth() {
+        try {
+            profile("owner-three", "Java", "MEMBERS");
+            var first = profile("first", "Rust", "MEMBERS");
+            var second = profile("second", "Rust", "MEMBERS");
+            var third = profile("third", "Rust", "MEMBERS");
+            var fourth = profile("fourth", "Rust", "MEMBERS");
+            login("owner-three");
+            var quest = service.create(new CreateQuest("Choose", "Choose", "Need Rust", LocalDate.now().plusDays(3), 3, List.of("Rust")));
+            when(ai.rank(anyList(), anyList())).thenReturn(List.of(
+                    new CandidateView(first.id().toString(), "first", .95, List.of("Rust")),
+                    new CandidateView(second.id().toString(), "second", .90, List.of("Rust")),
+                    new CandidateView(third.id().toString(), "third", .85, List.of("Rust")),
+                    new CandidateView(fourth.id().toString(), "fourth", .80, List.of("Rust"))));
+
+            var draft = service.draft(quest.id(), new DraftRequest(third.id().toString(), "third"));
+            assertEquals(third.id().toString(), draft.candidateId());
+            assertThrows(org.springframework.web.server.ResponseStatusException.class,
+                    () -> service.draft(quest.id(), new DraftRequest(fourth.id().toString(), "fourth")));
+        } finally { SecurityContextHolder.clearContext(); }
+    }
 }

@@ -193,8 +193,8 @@ class QuestService {
     }
     @Transactional ProposalView draft(UUID questId, DraftRequest request) {
         Quest quest = get(questId);
-        CandidateView selected = match(questId).stream().filter(c -> c.id().equals(request.candidateId())).findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Candidate is no longer an eligible match"));
+        CandidateView selected = match(questId).stream().limit(3).filter(c -> c.id().equals(request.candidateId())).findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Choose one of the current top three eligible matches"));
         String message = "Hi " + selected.name() + ", we are building " + quest.title() + ". Your capabilities appear relevant to: "
                 + String.join(", ", quest.requirements()) + ". Would you like to review the Quest and collaborate?";
         UserProfile receiver = users.findById(UUID.fromString(selected.id())).orElseThrow();

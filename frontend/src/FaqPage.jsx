@@ -1,7 +1,7 @@
 const groups = [
   { title: "Collaborator matching", items: [
-    ["How do I start?", "Describe the project and optionally provide the skills you need. CHIMAERA extracts requirements, searches saved member profiles, and presents the strongest eligible collaborator for your approval."],
-    ["How are collaborators selected?", "The model computes TF-IDF similarity from requested skills and skills saved in member profiles. This is an explainable recommendation, not a prediction of performance."],
+    ["How do I start?", "Describe the project and optionally provide the skills you need. CHIMAERA extracts requirements, searches saved member profiles, and presents up to three eligible collaborators for your selection and approval."],
+    ["How are collaborators selected?", "The model computes TF-IDF similarity from requested skills and skills saved in member profiles. CHIMAERA presents the top three eligible matches with their scores, and you choose whom to invite. The score is not a prediction of performance."],
     ["What if nobody matches?", "Refine overly narrow skill requirements or try again after more members update their profiles. CHIMAERA does not invent a candidate."],
     ["Can a resume update my profile?", "Yes. Uploading a text-based PDF reads its Skills section and detected organization, then replaces stale resume-derived profile values with the new document’s values. The fields remain editable. Scanned image-only PDFs require OCR and will not be auto-filled."],
     ["Can I describe skills in ordinary language?", "Yes. The extractor compares your description with the employee skill catalog and combines that result with any skills you enter explicitly. Clear, specific wording produces better recommendations."],
